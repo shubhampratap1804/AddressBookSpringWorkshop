@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,66 +18,53 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.addressbook.dto.AddressBookDTO;
 import com.addressbook.dto.ResponseDTO;
+import com.addressbook.model.AddressBookData;
+import com.addressbook.service.IService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping(value = "/addressbook")
-@Slf4j
+@RequestMapping("/addressbook")
 public class AddressBookController {
 
-	List<AddressBookDTO> contactList = new ArrayList<>();
-	public static AtomicLong counter = new AtomicLong();
+	@Autowired
+	IService addressBookService;
 
 	@GetMapping("/get")
 	public ResponseEntity<ResponseDTO> getAddressBookData() {
-		ResponseDTO responseDTO = new ResponseDTO("Retrieved all data from addressbook!", contactList);
-		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+		List<AddressBookData> addressBookList = null;
+		addressBookList = addressBookService.getAddressBookData();
+		ResponseDTO responseDTO = new ResponseDTO("Get address book successful!", addressBookList);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/get/{id}")
 	public ResponseEntity<ResponseDTO> getAddressBookDataById(@PathVariable("id") int id) {
-		for (AddressBookDTO myList : contactList) {
-			if (myList.getId() == id) {
-				ResponseDTO responseDTO = new ResponseDTO("Found contact list by id!", myList);
-				return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-			} else {
-				ResponseDTO responseDTO = new ResponseDTO("Not found contact list by id!", myList);
-				return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-			}
-		}
-		return null;
+		AddressBookData addressBookData = addressBookService.getAddressBookDataById(id);
+		ResponseDTO responseDTO = new ResponseDTO("Get call by id is successful!", addressBookData);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	@PostMapping("/create")
 	public ResponseEntity<ResponseDTO> addContactAddressBook(@RequestBody AddressBookDTO addressBookDTO) {
-		addressBookDTO.setId(counter.incrementAndGet());
-		contactList.add(addressBookDTO);
-		ResponseDTO responseDTO = new ResponseDTO("Created contact into the contactlist!", addressBookDTO);
+		AddressBookData addressBookData = null;
+		addressBookData = addressBookService.createAddressBookData(addressBookDTO);
+		ResponseDTO responseDTO = new ResponseDTO("Created contact into the contactlist!", addressBookData);
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<List<AddressBookDTO>> updateContactAddressBook(@PathVariable("id") int id,
+	@PutMapping("/update/{id}")
+	public ResponseEntity<ResponseDTO> updateContactAddressBook(@PathVariable("id") int id,
 			@RequestBody AddressBookDTO addressBookDTO) {
-		contactList.get(id).setFirstName(addressBookDTO.getFirstName());
-		contactList.get(id).setAddress(addressBookDTO.getAddress());
-		return new ResponseEntity<>(contactList, HttpStatus.OK);
+		AddressBookData addressBookData = addressBookService.updateAddressBookData(id, addressBookDTO);
+		ResponseDTO responseDTO = new ResponseDTO("Update contactlist successful!", addressBookData);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<ResponseDTO> deleteContactAddressBookById(@PathVariable("id") int id) {
-		for (AddressBookDTO myList : contactList) {
-			if (myList.getId() == id) {
-				contactList.remove(id);
-				ResponseDTO responseDTO = new ResponseDTO("Deleted contact by id!", contactList);
-				return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-
-			} else {
-				ResponseDTO responseDTO = new ResponseDTO("Contact not found in the list!", contactList);
-				return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-			}
-		}
-		return null;
+		addressBookService.deleteAddressBookData(id);
+		ResponseDTO responseDTO = new ResponseDTO("Deleted Address Book data successfully!", "Deleted for id: " + id);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 }
