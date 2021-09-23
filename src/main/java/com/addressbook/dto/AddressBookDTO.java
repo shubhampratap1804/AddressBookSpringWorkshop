@@ -1,10 +1,8 @@
 package com.addressbook.dto;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter @Data
+@Data
 public class AddressBookDTO {
 
 	// Class Variables
