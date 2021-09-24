@@ -7,7 +7,7 @@ import com.addressbook.dto.AddressBookDTO;
 import com.addressbook.model.AddressBookData;
 
 @Service
-public class AddressBookService implements IService {
+public class AddressBookService implements IAddressBookService {
 
 	List<AddressBookData> contactList = new ArrayList<>();
 	

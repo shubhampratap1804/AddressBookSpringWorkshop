@@ -1,8 +1,8 @@
 package com.addressbook.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,20 +15,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.addressbook.dto.AddressBookDTO;
 import com.addressbook.dto.ResponseDTO;
 import com.addressbook.model.AddressBookData;
-import com.addressbook.service.IService;
+import com.addressbook.service.IAddressBookService;
 
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/addressbook")
 public class AddressBookController {
 
 	@Autowired
-	IService addressBookService;
+	IAddressBookService addressBookService;
 
 	@GetMapping("/get")
 	public ResponseEntity<ResponseDTO> getAddressBookData() {
@@ -46,7 +44,7 @@ public class AddressBookController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<ResponseDTO> addContactAddressBook(@RequestBody AddressBookDTO addressBookDTO) {
+	public ResponseEntity<ResponseDTO> addContactAddressBook(@Valid @RequestBody AddressBookDTO addressBookDTO) {
 		AddressBookData addressBookData = null;
 		addressBookData = addressBookService.createAddressBookData(addressBookDTO);
 		ResponseDTO responseDTO = new ResponseDTO("Created contact into the contactlist!", addressBookData);
@@ -55,7 +53,7 @@ public class AddressBookController {
 
 	@PutMapping("/update/{id}")
 	public ResponseEntity<ResponseDTO> updateContactAddressBook(@PathVariable("id") int id,
-			@RequestBody AddressBookDTO addressBookDTO) {
+			@Valid @RequestBody AddressBookDTO addressBookDTO) {
 		AddressBookData addressBookData = addressBookService.updateAddressBookData(id, addressBookDTO);
 		ResponseDTO responseDTO = new ResponseDTO("Update contactlist successful!", addressBookData);
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
