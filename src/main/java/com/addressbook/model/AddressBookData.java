@@ -12,7 +12,7 @@ public class AddressBookData {
 	private String address;
 	private String city;
 	private String state;
-	private long zip;
+	private int zip;
 	private long phoneNumber;
 	private String email;
 	
