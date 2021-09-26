@@ -30,6 +30,11 @@ public class AddressBookService implements IAddressBookService {
 				.orElseThrow( () -> 
 					new AddressBookCustomException("Contact with this id " + id + "doest not exists!"));
 	}
+	
+	@Override
+	public List<AddressBookData> findContactByCity(String city) {
+		return addressBookRepository.findContactByCity(city);
+	}
 
 	@Override
 	public AddressBookData createAddressBookData(AddressBookDTO addressBookDTO) {
